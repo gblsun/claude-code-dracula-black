@@ -1,0 +1,88 @@
+{
+    "theme": "Dracula Black",
+    "keybindings":
+    [
+        {
+            "id": "Terminal.QuakeMode",
+            "keys": "win+sc(41)"
+        }
+    ],
+    "profiles":
+    {
+        "defaults":
+        {
+            "colorScheme": "Dracula Black",
+            "cursorShape": "bar",
+            "font":
+            {
+                "face": "Cascadia Code",
+                "cellHeight": "1.2"
+            },
+            "opacity": 35,
+            "useAcrylic": true,
+            "padding": "8, 8, 8, 24"
+        },
+        "list":
+        [
+            {
+                "commandline": "powershell.exe -NoLogo -NoExit -Command claude",
+                "guid": "{1b3b73e0-1347-4cc0-a3b7-b842901d031c}",
+                "hidden": false,
+                "icon": "✳️",
+                "name": "Claude Code",
+                "startingDirectory": "%USERPROFILE%",
+                "suppressApplicationTitle": true,
+                "tabColor": "#BD93F9",
+                "tabTitle": "Claude"
+            }
+        ]
+    },
+    "schemes":
+    [
+        {
+            "name": "Dracula Black",
+            "background": "#000000",
+            "foreground": "#F8F8F2",
+            "cursorColor": "#BD93F9",
+            "selectionBackground": "#44475A",
+            "black": "#21222C",
+            "blue": "#BD93F9",
+            "cyan": "#8BE9FD",
+            "green": "#50FA7B",
+            "purple": "#FF79C6",
+            "red": "#FF5555",
+            "white": "#F8F8F2",
+            "yellow": "#F1FA8C",
+            "brightBlack": "#6272A4",
+            "brightBlue": "#D6ACFF",
+            "brightCyan": "#A4FFFF",
+            "brightGreen": "#69FF94",
+            "brightPurple": "#FF92DF",
+            "brightRed": "#FF6E6E",
+            "brightWhite": "#FFFFFF",
+            "brightYellow": "#FFFFA5"
+        }
+    ],
+    "themes":
+    [
+        {
+            "name": "Dracula Black",
+            "window":
+            {
+                "applicationTheme": "dark",
+                "useMica": false
+            },
+            "tabRow":
+            {
+                "background": "#000000FF",
+                "unfocusedBackground": "#000000FF"
+            },
+            "tab":
+            {
+                "background": "#1E1F29FF",
+                "unfocusedBackground": "#00000000",
+                "showCloseButton": "hover"
+            }
+        }
+    ]
+}

@@ -1,0 +1,42 @@
+{
+  "theme": "custom:dracula",
+  "statusLine": {
+    "type": "command",
+    "command": "node ~/.claude/statusline.mjs",
+    "refreshInterval": 30
+  },
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "node ~/.claude/subagent-statusline.mjs"
+  },
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Pensando",
+      "Tramando",
+      "Cozinhando",
+      "Matutando",
+      "Arquitetando",
+      "Garimpando",
+      "Lapidando",
+      "Destrinchando",
+      "Maquinando",
+      "Rabiscando",
+      "Conjurando",
+      "Fuçando",
+      "Costurando",
+      "Afinando",
+      "Decifrando"
+    ]
+  },
+  "spinnerTipsOverride": {
+    "excludeDefault": false,
+    "tips": [
+      "Ctrl+J quebra a linha sem enviar",
+      "/theme → Ctrl+E edita o tema Dracula com preview",
+      "Shift+Tab alterna o modo de permissão",
+      "Esc duas vezes volta para uma mensagem anterior",
+      "Comece com ! para rodar um comando direto no terminal"
+    ]
+  }
+}
