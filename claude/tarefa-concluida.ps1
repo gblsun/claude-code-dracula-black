@@ -80,7 +80,7 @@ try {
     [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('Microsoft.WindowsTerminal_8wekyb3d8bbwe!App').Show($notificacao)
 } catch {}
 
-# Som próprio (arpejo de sino), tocado até o fim antes de o processo sair.
+# Som do toque (sons/tarefa-concluida.wav), tocado até o fim antes de o processo sair.
 $som = Join-Path $PSScriptRoot 'sons\tarefa-concluida.wav'
 if (Test-Path -LiteralPath $som) {
     (New-Object System.Media.SoundPlayer $som).PlaySync()

@@ -6,7 +6,7 @@ Visual escuro para o [Claude Code](https://code.claude.com) no Windows Terminal.
 - uma linha colorida para cada subagente;
 - spinner em português;
 - o **bonequinho do Claude Code** no canto inferior direito da barra;
-- um **toque de tarefa concluída**: notificação do Windows com resumo e um som próprio.
+- um **toque de tarefa concluída**: notificação do Windows com resumo e o *Secret Sound* de The Legend of Zelda.
 
 A paleta é baseada no [Dracula](https://draculatheme.com). O visual foi pensado para **daltonismo**: os níveis vão de ciano para amarelo e laranja (nunca de verde para vermelho), e todo estado vem acompanhado de texto, não só de cor.
 
@@ -31,8 +31,9 @@ O bonequinho do Claude Code, o mesmo da tela de abertura, fica alinhado à direi
 | `claude/palette.mjs` | Paleta Dracula e utilitários usados pelos dois scripts |
 | `claude/statusline-battery.js` | Lê a bateria no Windows via WMI (usado pela status line) |
 | `claude/tarefa-concluida.ps1` | Toque de tarefa concluída, chamado pelo hook `Stop` |
-| `claude/sons/tarefa-concluida.wav` | Som do toque: arpejo curto de sino |
-| `claude/sons/gerar-toque.mjs` | Gera o `.wav` do toque; edite as notas e o timbre se quiser outro som |
+| `claude/sons/tarefa-concluida.wav` | Som do toque: o *Secret Sound* de The Legend of Zelda, recriado por síntese |
+| `claude/sons/gerar-toque-zelda.mjs` | Gera o `.wav` com o jingle do Zelda; ajuste o volume ou as notas |
+| `claude/sons/gerar-toque.mjs` | Alternativa: gera um arpejo de sino original no lugar do jingle |
 | `claude/themes/dracula.json` | Tema "Dracula Black" do Claude Code, com base no `dark-daltonized` |
 | `claude/settings.example.json` | Trecho do `settings.json`: tema, status lines, hook do toque e spinner em português |
 | `windows-terminal/dracula-black.json` | Trecho do Windows Terminal: esquema preto, barra de abas preta, transparência, fonte, espaçamento, perfil "Claude Code" e modo Quake |
@@ -74,19 +75,28 @@ O bonequinho do Claude Code, o mesmo da tela de abertura, fica alinhado à direi
 
 ## Toque de tarefa concluída
 
+<p align="center">
+  <img src="https://media.giphy.com/media/NVBR6cLvUjV9C/giphy.gif" alt="Link, de The Legend of Zelda, de óculos escuros" width="240">
+</p>
+
 Quando o Claude termina uma resposta que levou **15 segundos ou mais**, o hook `Stop`:
 
 1. mostra uma notificação do Windows, em nome do Windows Terminal (clicar nela abre o terminal), com:
    - título `✓ Tarefa concluída · <pasta do projeto>`;
    - a primeira linha da resposta final como resumo;
    - quanto tempo a tarefa levou;
-2. toca `sons/tarefa-concluida.wav`, um arpejo de sino diferente do som padrão do Windows.
+2. toca o **Secret Sound** de The Legend of Zelda, o jingle de "segredo encontrado", em volume baixo.
+
+**[🔊 Ouvir o toque](claude/sons/tarefa-concluida.wav)**. O GitHub não toca áudio dentro do README, então o link abre o arquivo para baixar.
 
 Respostas rápidas não disparam nada, para não virar ruído. O hook roda em segundo plano (`async`), então não atrasa o Claude.
 
 - **Mudar o tempo mínimo:** adicione `"-SegundosMinimos", "30"` ao fim de `args` no hook.
-- **Trocar o som:** edite as notas em `sons/gerar-toque.mjs` e rode `node sons/gerar-toque.mjs`, ou coloque qualquer `.wav` com o nome `tarefa-concluida.wav`.
+- **Volume do jingle:** mude `VOLUME` em `sons/gerar-toque-zelda.mjs` e rode `node sons/gerar-toque-zelda.mjs`.
+- **Prefere um som original?** Rode `node sons/gerar-toque.mjs` para trocar o jingle por um arpejo de sino. Também dá para colocar qualquer `.wav` com o nome `tarefa-concluida.wav`.
 - **A notificação não aparece?** Confira se as notificações do Windows Terminal estão ativadas em Configurações → Sistema → Notificações, e se o modo "Não perturbe" está desligado.
+
+> The Legend of Zelda é marca da Nintendo. O toque é uma recriação feita por síntese de notas, sem áudio extraído do jogo, e este projeto não tem ligação com a Nintendo. GIF: [GIPHY Gaming](https://giphy.com/gifs/link-the-legend-of-zelda-NVBR6cLvUjV9C).
 
 ## Requisitos
 
