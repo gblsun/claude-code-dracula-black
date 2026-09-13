@@ -262,7 +262,10 @@ claude-code-midnight-synthwave/
 ├── windows-terminal/
 │   └── midnight-synthwave.json       → trecho do settings.json do Windows Terminal
 ├── test/
-│   └── statusline.test.mjs           → testes com dados simulados
+│   ├── statusline.test.mjs           → testes da barra com dados simulados
+│   └── install.test.mjs              → testes do instalador num diretório temporário
+├── install.ps1                       → instalador para PowerShell
+├── install.mjs                       → lógica do instalador (Node.js)
 ├── LICENSE
 └── README.md
 ```
@@ -279,11 +282,42 @@ claude-code-midnight-synthwave/
 
 ## Instalação
 
-**1. Clone o repositório e copie os arquivos para `~/.claude`** (PowerShell):
+### Rápida, com o instalador
 
 ```powershell
 git clone https://github.com/gblsun/claude-code-midnight-synthwave.git
 cd claude-code-midnight-synthwave
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+Depois, **reinicie o Claude Code**.
+
+O instalador:
+
+1. confere se o Node.js está instalado;
+2. copia os scripts da barra, o tema e os sons para `~/.claude`;
+3. junta ao seu `~/.claude/settings.json` o tema, a status line, a linha dos subagentes, o spinner e o hook do toque, já com o caminho do seu usuário;
+4. junta ao `settings.json` do Windows Terminal o esquema, o tema da janela, a transparência, a fonte, o perfil "Claude Code" e o atalho do modo Quake;
+5. faz **backup** de cada arquivo antes de alterar, com o nome `settings.json.bak-AAAAMMDD-HHMMSS`.
+
+Tudo o que você já tinha é mantido: outros hooks, perfis, esquemas e configurações. Dá para rodar de novo sempre que atualizar o repositório, sem duplicar nada.
+
+| Opção | O que faz |
+|---|---|
+| `-Simular` | Mostra o que seria feito, sem alterar nenhum arquivo |
+| `-SemTerminal` | Não mexe no Windows Terminal |
+| `-SemToque` | Não adiciona o toque de tarefa concluída |
+
+Fora do PowerShell, ou em outros sistemas, rode direto com Node: `node install.mjs`, com as opções `--simular`, `--sem-terminal` e `--sem-toque`.
+
+> Se o `settings.json` do Windows Terminal tiver comentários, eles não são mantidos na versão nova. O backup guarda o arquivo original.
+
+<details>
+<summary><b>Instalação manual</b></summary>
+
+**1. Copie os arquivos para `~/.claude`** (PowerShell, dentro da pasta do repositório):
+
+```powershell
 New-Item -ItemType Directory -Force "$HOME\.claude\themes", "$HOME\.claude\sons" | Out-Null
 Copy-Item claude\*.mjs, claude\statusline-windows.js, claude\tarefa-concluida.ps1 "$HOME\.claude\"
 Copy-Item claude\themes\midnight-synthwave.json "$HOME\.claude\themes\"
@@ -300,6 +334,8 @@ Copy-Item claude\sons\* "$HOME\.claude\sons\"
 - o atalho do **modo Quake** em `keybindings` (opcional).
 
 **4. Reinicie o Claude Code.**
+
+</details>
 
 ## Personalização
 
@@ -378,9 +414,13 @@ Os valores guardados entre execuções ficam na pasta temporária do sistema, em
 
 ```powershell
 node test/statusline.test.mjs
+node test/install.test.mjs
 ```
 
-Os testes usam dados simulados, criam um repositório git temporário e conferem cada dado da barra, a largura, o bonequinho e a linha dos subagentes. Para testar os arquivos já instalados:
+- **`statusline.test.mjs`:** usa dados simulados, cria um repositório git temporário e confere cada dado da barra, a largura, o bonequinho e a linha dos subagentes.
+- **`install.test.mjs`:** roda o instalador num diretório temporário, com configurações falsas que já têm outros hooks, perfis e comentários. Confere se nada é perdido ou duplicado, e se a simulação não altera arquivos.
+
+Para testar os arquivos da barra já instalados:
 
 ```powershell
 $env:STATUSLINE_DIR = "$HOME\.claude"; node test/statusline.test.mjs
