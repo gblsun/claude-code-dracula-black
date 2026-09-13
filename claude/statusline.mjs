@@ -1,4 +1,4 @@
-// Status line do Claude Code na paleta Dracula.
+// Status line do Claude Code com a paleta do tema ativo.
 // Recebe o JSON da sessão via stdin e distribui os dados em linhas que cabem na largura do terminal.
 import { execFileSync } from 'node:child_process';
 import { closeSync, existsSync, openSync, readFileSync, readSync, statSync, statfsSync, writeFileSync } from 'node:fs';
@@ -6,14 +6,14 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  RESET, PURPLE, CYAN, PINK, ORANGE, YELLOW, COMMENT, LABEL, FG,
+  RESET, ACCENT, INFO, HIGHLIGHT, WARN, CAUTION, MUTED, LABEL, STRONG,
   levelColor, bar, link, readStdinJson, formatDuration, untilEpoch, decimal, shortTokens, packLines,
-} from './dracula-colors.mjs';
+} from './palette.mjs';
 
 const data = await readStdinJson();
 
 const cwd = data.workspace?.current_dir || data.cwd || process.cwd();
-const DOT = `${COMMENT} · `;
+const DOT = `${MUTED} · `;
 
 const run = (command, args) => {
   try {
@@ -203,52 +203,52 @@ const pythonVersion = (projectDir) => {
 
 // Estado de revisão com cor e palavra (a cor sozinha não basta para daltonismo).
 const PR_STATES = [
-  [/approv/i, CYAN, 'aprovado'],
-  [/change/i, ORANGE, 'alterações pedidas'],
+  [/approv/i, INFO, 'aprovado'],
+  [/change/i, WARN, 'alterações pedidas'],
   [/draft/i, LABEL, 'rascunho'],
-  [/./, YELLOW, 'pendente'],
+  [/./, CAUTION, 'pendente'],
 ];
 
 const segments = [];
 
 // Sessão, modelo e modos
-if (data.session_name) segments.push(`${LABEL}sessão ${PINK}${data.session_name}`);
+if (data.session_name) segments.push(`${LABEL}sessão ${HIGHLIGHT}${data.session_name}`);
 
-let model = `${LABEL}modelo ${PURPLE}${data.model?.display_name ?? 'Claude'}`;
-if (data.effort?.level) model += `${DOT}${LABEL}esforço ${PURPLE}${data.effort.level}`;
+let model = `${LABEL}modelo ${ACCENT}${data.model?.display_name ?? 'Claude'}`;
+if (data.effort?.level) model += `${DOT}${LABEL}esforço ${ACCENT}${data.effort.level}`;
 segments.push(model);
 
-if (data.fast_mode) segments.push(`${YELLOW}fast mode`);
-if (data.vim?.mode) segments.push(`${LABEL}vim ${CYAN}${data.vim.mode}`);
-if (data.agent?.name) segments.push(`${LABEL}agente ${PINK}${data.agent.name}`);
+if (data.fast_mode) segments.push(`${CAUTION}fast mode`);
+if (data.vim?.mode) segments.push(`${LABEL}vim ${INFO}${data.vim.mode}`);
+if (data.agent?.name) segments.push(`${LABEL}agente ${HIGHLIGHT}${data.agent.name}`);
 
 // Pasta, repositório, git e PR
-segments.push(`${LABEL}pasta ${CYAN}${path.basename(cwd) || cwd}`);
+segments.push(`${LABEL}pasta ${INFO}${path.basename(cwd) || cwd}`);
 
 const repo = data.workspace?.repo;
 if (repo?.owner && repo?.name) {
   const slug = `${repo.owner}/${repo.name}`;
-  segments.push(`${LABEL}repo ${CYAN}${link(`https://${repo.host ?? 'github.com'}/${slug}`, slug)}`);
+  segments.push(`${LABEL}repo ${INFO}${link(`https://${repo.host ?? 'github.com'}/${slug}`, slug)}`);
 }
 
 const status = gitStatus();
 if (status?.branch) {
-  const parts = [`${LABEL}branch ${PINK}${status.branch}`];
-  if (status.changed) parts.push(`${ORANGE}${status.changed} ${status.changed === 1 ? 'alterado' : 'alterados'}`);
-  if (status.ahead) parts.push(`${CYAN}↑${status.ahead} p/ enviar`);
-  if (status.behind) parts.push(`${YELLOW}↓${status.behind} p/ baixar`);
+  const parts = [`${LABEL}branch ${HIGHLIGHT}${status.branch}`];
+  if (status.changed) parts.push(`${WARN}${status.changed} ${status.changed === 1 ? 'alterado' : 'alterados'}`);
+  if (status.ahead) parts.push(`${INFO}↑${status.ahead} p/ enviar`);
+  if (status.behind) parts.push(`${CAUTION}↓${status.behind} p/ baixar`);
   segments.push(parts.join(DOT));
 
   const history = [];
-  if (status.stash) history.push(`${LABEL}stash ${FG}${status.stash}`);
+  if (status.stash) history.push(`${LABEL}stash ${STRONG}${status.stash}`);
   const lastCommit = Number(git('log', '-1', '--format=%ct'));
-  if (lastCommit) history.push(`${LABEL}último commit ${FG}há ${formatDuration(Date.now() - lastCommit * 1000)}`);
+  if (lastCommit) history.push(`${LABEL}último commit ${STRONG}há ${formatDuration(Date.now() - lastCommit * 1000)}`);
   if (history.length) segments.push(history.join(DOT));
 }
 
 if (data.pr?.number) {
   const label = `PR #${data.pr.number}`;
-  let pr = `${PURPLE}${data.pr.url ? link(data.pr.url, label) : label}`;
+  let pr = `${ACCENT}${data.pr.url ? link(data.pr.url, label) : label}`;
   if (data.pr.review_state) {
     const [, color, word] = PR_STATES.find(([re]) => re.test(data.pr.review_state));
     pr += ` ${color}${word}`;
@@ -265,30 +265,30 @@ if (cw.context_window_size) {
   const used = u
     ? (u.input_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0)
     : Math.round((ctx / 100) * cw.context_window_size);
-  context += `${DOT}${FG}${shortTokens(used)} ${LABEL}de ${FG}${shortTokens(cw.context_window_size)}`;
+  context += `${DOT}${STRONG}${shortTokens(used)} ${LABEL}de ${STRONG}${shortTokens(cw.context_window_size)}`;
 }
 segments.push(context);
 
 for (const [label, window] of [['limite 5h', data.rate_limits?.five_hour], ['limite semanal', data.rate_limits?.seven_day]]) {
   if (window?.used_percentage == null) continue;
   let segment = percent(label, window.used_percentage);
-  if (window.resets_at) segment += `${DOT}${LABEL}renova em ${FG}${untilEpoch(window.resets_at)}`;
+  if (window.resets_at) segment += `${DOT}${LABEL}renova em ${STRONG}${untilEpoch(window.resets_at)}`;
   segments.push(segment);
 }
 
 const cache = data.prompt_cache;
 if (cache) {
-  const parts = [`${LABEL}cache ${cache.warm ? `${CYAN}● ativo` : `${LABEL}● expirado`}`];
-  if (cache.warm && cache.expires_at) parts.push(`${LABEL}expira em ${FG}${untilEpoch(cache.expires_at)}`);
-  if (cache.hit_ratio != null) parts.push(`${LABEL}acerto ${FG}${Math.round(cache.hit_ratio * 100)}%`);
+  const parts = [`${LABEL}cache ${cache.warm ? `${INFO}● ativo` : `${LABEL}● expirado`}`];
+  if (cache.warm && cache.expires_at) parts.push(`${LABEL}expira em ${STRONG}${untilEpoch(cache.expires_at)}`);
+  if (cache.hit_ratio != null) parts.push(`${LABEL}acerto ${STRONG}${Math.round(cache.hit_ratio * 100)}%`);
   segments.push(parts.join(DOT));
 }
 
 const tokens = sessionTokens(data.transcript_path);
 if (tokens && (tokens.input || tokens.output)) {
   segments.push(
-    `${LABEL}tokens da sessão ${FG}${shortTokens(tokens.input)} ${LABEL}entrada` +
-      `${DOT}${FG}${shortTokens(tokens.output)} ${LABEL}saída`,
+    `${LABEL}tokens da sessão ${STRONG}${shortTokens(tokens.input)} ${LABEL}entrada` +
+      `${DOT}${STRONG}${shortTokens(tokens.output)} ${LABEL}saída`,
   );
 }
 
@@ -298,8 +298,8 @@ const hours = (cost.total_duration_ms ?? 0) / 3600000;
 const showRates = hours >= 5 / 60;
 
 if (cost.total_cost_usd != null) {
-  let segment = `${LABEL}custo ${PURPLE}$${decimal(cost.total_cost_usd)}`;
-  if (showRates) segment += `${DOT}${FG}$${decimal(cost.total_cost_usd / hours)}${LABEL}/h`;
+  let segment = `${LABEL}custo ${ACCENT}$${decimal(cost.total_cost_usd)}`;
+  if (showRates) segment += `${DOT}${STRONG}$${decimal(cost.total_cost_usd / hours)}${LABEL}/h`;
   segments.push(segment);
 }
 
@@ -307,15 +307,15 @@ if (cost.total_cost_usd != null) {
 const DAYS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 const now = new Date();
 const two = (n) => String(n).padStart(2, '0');
-segments.push(`${FG}${DAYS[now.getDay()]} ${two(now.getDate())}/${two(now.getMonth() + 1)} ${two(now.getHours())}:${two(now.getMinutes())}`);
+segments.push(`${STRONG}${DAYS[now.getDay()]} ${two(now.getDate())}/${two(now.getMonth() + 1)} ${two(now.getHours())}:${two(now.getMinutes())}`);
 
-if (cost.total_duration_ms) segments.push(`${LABEL}duração ${PURPLE}${formatDuration(cost.total_duration_ms)}`);
+if (cost.total_duration_ms) segments.push(`${LABEL}duração ${ACCENT}${formatDuration(cost.total_duration_ms)}`);
 
 const added = cost.total_lines_added ?? 0;
 const removed = cost.total_lines_removed ?? 0;
 if (added || removed) {
-  let segment = `${LABEL}linhas ${CYAN}+${added} ${ORANGE}-${removed}`;
-  if (showRates) segment += `${DOT}${FG}${Math.round((added + removed) / hours)}${LABEL}/h`;
+  let segment = `${LABEL}linhas ${INFO}+${added} ${WARN}-${removed}`;
+  if (showRates) segment += `${DOT}${STRONG}${Math.round((added + removed) / hours)}${LABEL}/h`;
   segments.push(segment);
 }
 
@@ -323,14 +323,14 @@ const pkg = findUp(['package.json']);
 if (pkg) {
   const json = readJson(pkg.file);
   if (json) {
-    const version = json.version ? ` ${PURPLE}v${json.version}` : '';
-    segments.push(`${LABEL}projeto ${FG}${json.name ?? path.basename(pkg.dir)}${version}`);
+    const version = json.version ? ` ${ACCENT}v${json.version}` : '';
+    segments.push(`${LABEL}projeto ${STRONG}${json.name ?? path.basename(pkg.dir)}${version}`);
   }
-  segments.push(`${LABEL}node ${FG}${process.version}`);
+  segments.push(`${LABEL}node ${STRONG}${process.version}`);
 } else {
   const py = findUp(['pyproject.toml', 'requirements.txt', 'setup.py', '.python-version']);
   const version = py && pythonVersion(py.dir);
-  if (version) segments.push(`${LABEL}python ${FG}${version}`);
+  if (version) segments.push(`${LABEL}python ${STRONG}${version}`);
 }
 
 const cpu = cpuPercent();
@@ -341,21 +341,21 @@ try {
   const disk = statfsSync(cwd);
   const freeGb = (disk.bavail * disk.bsize) / 1024 ** 3;
   const freeRatio = disk.bavail / disk.blocks;
-  const color = freeRatio < 0.1 ? ORANGE : freeRatio < 0.25 ? YELLOW : CYAN;
+  const color = freeRatio < 0.1 ? WARN : freeRatio < 0.25 ? CAUTION : INFO;
   segments.push(`${LABEL}disco ${color}${decimal(freeGb, freeGb < 10 ? 1 : 0)} GB ${LABEL}livres`);
 } catch {}
 
 const bat = battery();
 if (bat) {
-  const color = bat.pct < 20 ? ORANGE : bat.pct < 50 ? YELLOW : CYAN;
+  const color = bat.pct < 20 ? WARN : bat.pct < 50 ? CAUTION : INFO;
   let segment = `${LABEL}bateria ${color}${bat.pct}%`;
   if (CHARGING.has(bat.status)) segment += `${LABEL} carregando`;
   else if (bat.status === 2) segment += `${LABEL} na tomada`;
   segments.push(segment);
 }
 
-if (data.version) segments.push(`${LABEL}claude ${FG}v${data.version}`);
+if (data.version) segments.push(`${LABEL}claude ${STRONG}v${data.version}`);
 
 const width = Math.max(40, (Number(process.env.COLUMNS) || 120) - 4);
-const lines = packLines(segments, width, `${COMMENT} │ `);
+const lines = packLines(segments, width, `${MUTED} │ `);
 process.stdout.write(lines.map((line) => line + RESET).join('\n') + '\n');

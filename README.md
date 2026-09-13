@@ -4,7 +4,8 @@ Visual escuro para o [Claude Code](https://code.claude.com) no Windows Terminal.
 - tema Dracula com fundo preto;
 - uma **status line descritiva** que se ajusta à largura da tela;
 - uma linha colorida para cada subagente;
-- spinner em português.
+- spinner em português;
+- um **toque de tarefa concluída**: notificação do Windows com resumo e um som próprio.
 
 A paleta é baseada no [Dracula](https://draculatheme.com). O visual foi pensado para **daltonismo**: os níveis vão de ciano para amarelo e laranja (nunca de verde para vermelho), e todo estado vem acompanhado de texto, não só de cor.
 
@@ -24,10 +25,13 @@ A barra distribui os dados em quantas linhas forem necessárias para caber na la
 |---|---|
 | `claude/statusline.mjs` | Status line principal |
 | `claude/subagent-statusline.mjs` | Linha de cada subagente: status, modelo, tokens, tempo e tarefa |
-| `claude/dracula-colors.mjs` | Paleta e utilitários usados pelos dois scripts |
+| `claude/palette.mjs` | Paleta Dracula e utilitários usados pelos dois scripts |
 | `claude/statusline-battery.js` | Lê a bateria no Windows via WMI (usado pela status line) |
+| `claude/tarefa-concluida.ps1` | Toque de tarefa concluída, chamado pelo hook `Stop` |
+| `claude/sons/tarefa-concluida.wav` | Som do toque: arpejo curto de sino |
+| `claude/sons/gerar-toque.mjs` | Gera o `.wav` do toque; edite as notas e o timbre se quiser outro som |
 | `claude/themes/dracula.json` | Tema "Dracula Black" do Claude Code, com base no `dark-daltonized` |
-| `claude/settings.example.json` | Trecho do `settings.json`: tema, status lines e spinner em português |
+| `claude/settings.example.json` | Trecho do `settings.json`: tema, status lines, hook do toque e spinner em português |
 | `windows-terminal/dracula-black.json` | Trecho do Windows Terminal: esquema preto, barra de abas preta, transparência, fonte, espaçamento, perfil "Claude Code" e modo Quake |
 | `test/statusline.test.mjs` | Testes com dados simulados e um repositório git temporário |
 
@@ -65,13 +69,29 @@ A barra distribui os dados em quantas linhas forem necessárias para caber na la
 | `cpu` · `ram` · `disco` · `bateria` | Uso do computador |
 | `claude` | Versão do Claude Code |
 
+## Toque de tarefa concluída
+
+Quando o Claude termina uma resposta que levou **15 segundos ou mais**, o hook `Stop`:
+
+1. mostra uma notificação do Windows, em nome do Windows Terminal (clicar nela abre o terminal), com:
+   - título `✓ Tarefa concluída · <pasta do projeto>`;
+   - a primeira linha da resposta final como resumo;
+   - quanto tempo a tarefa levou;
+2. toca `sons/tarefa-concluida.wav`, um arpejo de sino diferente do som padrão do Windows.
+
+Respostas rápidas não disparam nada, para não virar ruído. O hook roda em segundo plano (`async`), então não atrasa o Claude.
+
+- **Mudar o tempo mínimo:** adicione `"-SegundosMinimos", "30"` ao fim de `args` no hook.
+- **Trocar o som:** edite as notas em `sons/gerar-toque.mjs` e rode `node sons/gerar-toque.mjs`, ou coloque qualquer `.wav` com o nome `tarefa-concluida.wav`.
+- **A notificação não aparece?** Confira se as notificações do Windows Terminal estão ativadas em Configurações → Sistema → Notificações, e se o modo "Não perturbe" está desligado.
+
 ## Requisitos
 
 - Claude Code recente (testado na versão 2.1.270)
 - Node.js 18.15 ou mais novo
 - Git 2.35 ou mais novo (para contar o stash)
 - Windows Terminal 1.21 ou mais novo, para o espaçamento entre linhas (testado na 1.24)
-- Bateria: só no Windows, via `cscript`. Em outros sistemas o dado não aparece
+- Bateria e toque de tarefa concluída: só no Windows (usam `cscript` e Windows PowerShell 5.1)
 
 ## Instalação
 
@@ -80,12 +100,13 @@ A barra distribui os dados em quantas linhas forem necessárias para caber na la
    ```powershell
    git clone https://github.com/gblsun/claude-code-dracula-black.git
    cd claude-code-dracula-black
-   New-Item -ItemType Directory -Force "$HOME\.claude\themes" | Out-Null
-   Copy-Item claude\*.mjs, claude\statusline-battery.js "$HOME\.claude\"
+   New-Item -ItemType Directory -Force "$HOME\.claude\themes", "$HOME\.claude\sons" | Out-Null
+   Copy-Item claude\*.mjs, claude\statusline-battery.js, claude\tarefa-concluida.ps1 "$HOME\.claude\"
    Copy-Item claude\themes\dracula.json "$HOME\.claude\themes\"
+   Copy-Item claude\sons\* "$HOME\.claude\sons\"
    ```
 
-2. Mescle o conteúdo de `claude/settings.example.json` no seu `~/.claude/settings.json`.
+2. Mescle o conteúdo de `claude/settings.example.json` no seu `~/.claude/settings.json`. No hook `Stop`, troque `SEU_USUARIO` pelo nome da sua pasta de usuário do Windows.
 
 3. No Windows Terminal, abra o arquivo de configurações (`Ctrl+Shift+,`) e mescle o conteúdo de `windows-terminal/dracula-black.json`:
    - `schemes`, `themes` e `theme`: fundo e barra de abas pretos;
@@ -97,7 +118,7 @@ A barra distribui os dados em quantas linhas forem necessárias para caber na la
 
 ## Personalização
 
-- **Cores da barra:** edite `dracula-colors.mjs`.
+- **Cores da barra:** edite `palette.mjs`.
 - **Cores da interface:** `/theme`, selecione **Dracula Black** e aperte `Ctrl+E` para abrir o editor com preview.
 - **Tirar ou reordenar dados:** cada dado é um bloco em `statusline.mjs`, na ordem em que aparece.
 - **Transparência:** mude `opacity` no Windows Terminal (0 a 100).
@@ -110,6 +131,7 @@ A barra distribui os dados em quantas linhas forem necessárias para caber na la
 - **Bateria:** consultada no máximo uma vez por minuto.
 - **Arquivos temporários:** os valores guardados entre execuções ficam em `claude-statusline-*.json`, na pasta temporária do sistema.
 - **Relógio:** `refreshInterval: 30` faz a barra atualizar sozinha a cada 30 segundos, mesmo sem mensagens novas.
+- **Duração da tarefa:** o toque mede do último prompt que você digitou até o fim da resposta, lendo o final do histórico da conversa.
 
 ## Testes
 

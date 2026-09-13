@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const scriptsDir = process.env.STATUSLINE_DIR ?? fileURLToPath(new URL('../claude/', import.meta.url));
-const { visibleLength } = await import(pathToFileURL(path.join(scriptsDir, 'dracula-colors.mjs')).href);
+const { visibleLength } = await import(pathToFileURL(path.join(scriptsDir, 'palette.mjs')).href);
 
 const BOM = String.fromCharCode(0xfeff);
 const strip = (s) => s.replace(/\x1b\[[0-9;]*m/g, '').replace(/\x1b\]8;;[^\x1b]*\x1b\\/g, '');

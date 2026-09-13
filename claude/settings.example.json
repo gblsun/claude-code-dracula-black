@@ -9,6 +9,20 @@
     "type": "command",
     "command": "node ~/.claude/subagent-statusline.mjs"
   },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:\\Users\\SEU_USUARIO\\.claude\\tarefa-concluida.ps1"],
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": [
@@ -33,7 +47,7 @@
     "excludeDefault": false,
     "tips": [
       "Ctrl+J quebra a linha sem enviar",
-      "/theme → Ctrl+E edita o tema Dracula com preview",
+      "/theme → Ctrl+E edita o tema atual com preview",
       "Shift+Tab alterna o modo de permissão",
       "Esc duas vezes volta para uma mensagem anterior",
       "Comece com ! para rodar um comando direto no terminal"

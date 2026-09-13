@@ -1,26 +1,25 @@
 // Paleta Dracula e utilitários compartilhados pelos scripts de status line.
 
-export const rgb = (hex) => {
-  const n = parseInt(hex.slice(1), 16);
-  return `\x1b[38;2;${n >> 16};${(n >> 8) & 255};${n & 255}m`;
-};
+const toRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+
+export const rgb = (hex) => `\x1b[38;2;${toRgb(hex).join(';')}m`;
 export const RESET = '\x1b[0m';
-export const PURPLE = rgb('#bd93f9');
-export const CYAN = rgb('#8be9fd');
-export const PINK = rgb('#ff79c6');
-export const ORANGE = rgb('#ffb86c');
-export const YELLOW = rgb('#f1fa8c');
-export const COMMENT = rgb('#6272a4');
-export const LABEL = rgb('#a4acd4');
-export const FG = rgb('#f8f8f2');
+export const ACCENT = rgb('#bd93f9'); // roxo
+export const INFO = rgb('#8be9fd'); // ciano
+export const HIGHLIGHT = rgb('#ff79c6'); // rosa
+export const WARN = rgb('#ffb86c'); // laranja
+export const CAUTION = rgb('#f1fa8c'); // amarelo
+export const MUTED = rgb('#6272a4'); // cinza-azulado
+export const LABEL = rgb('#a4acd4'); // lavanda, para rótulos
+export const STRONG = rgb('#f8f8f2'); // quase branco, para valores
 
 // Cores por faixa sem depender de vermelho/verde (amigável para daltonismo).
-export const levelColor = (pct) => (pct < 50 ? CYAN : pct < 80 ? YELLOW : ORANGE);
+export const levelColor = (pct) => (pct < 50 ? INFO : pct < 80 ? CAUTION : WARN);
 
 // Barra de progresso: blocos cheios na cor da faixa, vazios em cinza.
 export const bar = (pct, width) => {
   const filled = Math.max(0, Math.min(width, Math.round((pct / 100) * width)));
-  return `${levelColor(pct)}${'█'.repeat(filled)}${COMMENT}${'░'.repeat(width - filled)}`;
+  return `${levelColor(pct)}${'█'.repeat(filled)}${MUTED}${'░'.repeat(width - filled)}`;
 };
 
 // Link clicável (OSC 8), suportado pelo Windows Terminal.
