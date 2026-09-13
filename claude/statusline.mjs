@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   RESET, ACCENT, INFO, HIGHLIGHT, WARN, CAUTION, MUTED, LABEL, STRONG,
-  levelColor, bar, link, readStdinJson, formatDuration, untilEpoch, decimal, shortTokens, packLines,
+  rgb, levelColor, bar, link, readStdinJson, formatDuration, untilEpoch, decimal, shortTokens, packLines, visibleLength,
 } from './palette.mjs';
 
 const data = await readStdinJson();
@@ -357,5 +357,25 @@ if (bat) {
 if (data.version) segments.push(`${LABEL}claude ${STRONG}v${data.version}`);
 
 const width = Math.max(40, (Number(process.env.COLUMNS) || 120) - 4);
-const lines = packLines(segments, width, `${MUTED} │ `);
+
+// Bonequinho do Claude Code no canto inferior direito, com o mesmo desenho da tela de abertura.
+// Os dados ocupam a largura que sobra; em terminais estreitos ele não aparece.
+const MASCOT = [' ▐▛███▜▌ ', '▝▜█████▛▘', '  ▘▘ ▝▝  '];
+const MASCOT_COLOR = rgb('#d77757');
+const showMascot = width >= 70;
+const MASCOT_GAP = 2;
+
+const lines = packLines(segments, showMascot ? width - MASCOT[0].length - MASCOT_GAP : width, `${MUTED} │ `);
+
+if (showMascot) {
+  while (lines.length < MASCOT.length) lines.push('');
+  const first = lines.length - MASCOT.length;
+  MASCOT.forEach((row, r) => {
+    const line = lines[first + r];
+    // O RESET antes dos espaços evita que uma linha só com o bonequinho perca o alinhamento.
+    const pad = ' '.repeat(Math.max(0, width - row.length - visibleLength(line)));
+    lines[first + r] = `${line}${RESET}${pad}${MASCOT_COLOR}${row}`;
+  });
+}
+
 process.stdout.write(lines.map((line) => line + RESET).join('\n') + '\n');

@@ -5,6 +5,7 @@ Visual escuro para o [Claude Code](https://code.claude.com) no Windows Terminal.
 - uma **status line descritiva** que se ajusta à largura da tela;
 - uma linha colorida para cada subagente;
 - spinner em português;
+- o **bonequinho do Claude Code** no canto inferior direito da barra;
 - um **toque de tarefa concluída**: notificação do Windows com resumo e um som próprio.
 
 A paleta é baseada no [Dracula](https://draculatheme.com). O visual foi pensado para **daltonismo**: os níveis vão de ciano para amarelo e laranja (nunca de verde para vermelho), e todo estado vem acompanhado de texto, não só de cor.
@@ -12,12 +13,14 @@ A paleta é baseada no [Dracula](https://draculatheme.com). O visual foi pensado
 ## Prévia
 
 ```
-sessão meu-projeto │ modelo Opus · esforço xhigh │ pasta meu-app │ repo dono/projeto │ branch main · 2 alterados · ↑1 p/ enviar │ stash 1 · último commit há 5m │ PR #12 aprovado
-contexto ███░░░░░░░ 32% · 64k de 200k │ limite 5h 24% · renova em 2h13m │ limite semanal 81% · renova em 3d04h │ cache ● ativo · expira em 42m · acerto 91% │ tokens da sessão 9,9M entrada · 179k saída
-custo $1,23 · $1,14/h │ dom 13/09 00:49 │ duração 1h05m │ linhas +156 -23 · 165/h │ projeto meu-app v1.2.3 │ node v24.18.0 │ cpu 28% · ram 81% │ disco 14 GB livres │ bateria 98% na tomada │ claude v2.1.270
+sessão meu-projeto │ modelo Opus · esforço xhigh │ pasta claude-code-dracula-black │ repo gblsun/claude-code-dracula-black │ branch main · 1 alterado │ último commit há 38m      ▐▛███▜▌
+contexto ███░░░░░░░ 32% · 64k de 200k │ limite 5h 24% · renova em 2h12m │ limite semanal 41% · renova em 3d03h │ cache ● ativo · expira em 42m · acerto 91%                      ▝▜█████▛▘
+custo $1,23 · $1,14/h │ dom 13/09 02:16 │ duração 1h05m │ linhas +156 -23 · 165/h │ cpu 58% · ram 85% │ disco 13 GB livres │ bateria 98% na tomada │ claude v2.1.270               ▘▘ ▝▝
 ```
 
 A barra distribui os dados em quantas linhas forem necessárias para caber na largura do terminal: em tela larga ficam 3 linhas, em tela estreita, mais. Um dado só aparece quando existe. Por exemplo, git só dentro de um repositório, e PR só com um pull request aberto.
+
+O bonequinho do Claude Code, o mesmo da tela de abertura, fica alinhado à direita das últimas 3 linhas. Os dados usam a largura que sobra, e em terminais com menos de ~74 colunas ele some para não apertar nada.
 
 ## O que vem no pacote
 
