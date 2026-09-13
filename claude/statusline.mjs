@@ -149,7 +149,7 @@ const cpuPercent = () => {
   return now.pct;
 };
 
-// Bateria, discos, taxa de atualização da tela e GPU via WMI: um cscript de ~300ms,
+// Bateria, velocidade da RAM, discos e GPU via WMI: um cscript de ~300ms,
 // rodado no máximo a cada 25 segundos. O uso da GPU é a média desde a leitura anterior.
 const WINDOWS_CACHE = cacheFile('windows');
 const WINDOWS_SCRIPT = fileURLToPath(new URL('./statusline-windows.js', import.meta.url));
@@ -161,11 +161,11 @@ const windowsInfo = () => {
   if (cached && Date.now() - cached.at < 25000) return cached;
   const out = run('cscript.exe', ['//nologo', WINDOWS_SCRIPT]);
   if (out == null) return cached;
-  const info = { at: Date.now(), battery: null, hz: null, disks: [], gpuTimes: {}, gpu: null };
+  const info = { at: Date.now(), battery: null, ramMhz: null, disks: [], gpuTimes: {}, gpu: null };
   for (const line of out.split(/\r?\n/)) {
     const [kind, ...values] = line.trim().split(' ');
     if (kind === 'BAT') info.battery = { pct: Number(values[0]), status: Number(values[1]) };
-    else if (kind === 'HZ') info.hz = Math.max(info.hz ?? 0, Number(values[0]));
+    else if (kind === 'RAM') info.ramMhz = Number(values[0]);
     else if (kind === 'DISK') info.disks.push({ id: values[0], free: Number(values[1]), size: Number(values[2]) });
     else if (kind === 'GPU') info.gpuTimes[values[0]] = Number(values[1]);
   }
@@ -360,6 +360,7 @@ const totalGb = os.totalmem() / 1024 ** 3;
 const usedGb = totalGb - os.freemem() / 1024 ** 3;
 const ramPct = Math.round((usedGb / totalGb) * 100);
 hardware.push(`${LABEL}ram ${STRONG}${decimal(usedGb, 1)}${LABEL}/${decimal(totalGb, 1)} GB ${levelColor(ramPct)}${ramPct}%`);
+if (win?.ramMhz) hardware.push(`${STRONG}${win.ramMhz} ${LABEL}MHz`);
 segments.push(hardware.join(DOT));
 
 // Espaço livre de cada disco: no Windows, todos os discos locais; nos outros sistemas, o da pasta atual.
@@ -389,8 +390,6 @@ if (bat) {
   else if (bat.status === 2) segment += `${LABEL} na tomada`;
   segments.push(segment);
 }
-
-if (win?.hz) segments.push(`${LABEL}tela ${STRONG}${win.hz} Hz`);
 
 if (data.version) segments.push(`${LABEL}claude ${STRONG}v${data.version}`);
 

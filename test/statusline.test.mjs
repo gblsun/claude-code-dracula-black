@@ -87,13 +87,13 @@ try {
   );
   writeFileSync(cpuCache, JSON.stringify({ idle: cur.idle - 3000, total: cur.total - 4000, at: Date.now() - 30000 }));
 
-  // Dados do Windows já coletados: bateria, tela, dois discos e uso da GPU.
+  // Dados do Windows já coletados: bateria, velocidade da RAM, dois discos e uso da GPU.
   const windowsCache = path.join(os.tmpdir(), 'claude-statusline-windows.json');
   if (WINDOWS) {
     writeFileSync(windowsCache, JSON.stringify({
       at: Date.now(),
       battery: { pct: 76, status: 2 },
-      hz: 144,
+      ramMhz: 2400,
       disks: [{ id: 'C:', free: 13.2 * GB, size: 118.2 * GB }, { id: 'D:', free: 864.4 * GB, size: 931.5 * GB }],
       gpuTimes: {},
       gpu: 37,
@@ -142,10 +142,11 @@ try {
     check(all.includes('duração 1h05m') && /\S{3} \d{2}\/\d{2} \d{2}:\d{2}/.test(all), 'data e duração');
     check(all.includes('projeto meu-app v1.2.3') && /node v\d+/.test(all), 'versão do projeto e do Node');
     check(all.includes('claude v2.1.270'), 'versão do Claude Code');
+    check(!all.includes('°C'), 'sem temperatura');
     if (WINDOWS) {
-      check(/cpu \d+% · gpu 37% · ram \d+,\d\/\d+,\d GB \d+%/.test(all), 'CPU, GPU e RAM em GB');
+      check(/cpu \d+% · gpu 37% · ram \d+,\d\/\d+,\d GB \d+% · 2400 MHz/.test(all), 'CPU, GPU, RAM em GB e velocidade da RAM');
       check(all.includes('discos C: 13/118 GB livres · D: 864/932 GB livres'), 'todos os discos');
-      check(all.includes('bateria 76% na tomada') && all.includes('tela 144 Hz'), 'bateria e taxa de atualização da tela');
+      check(all.includes('bateria 76% na tomada') && !all.includes(' Hz'), 'bateria, sem taxa de atualização da tela');
     } else {
       check(/cpu \d+% · ram \d+,\d\/\d+,\d GB \d+%/.test(all) && /discos \d+(,\d)?\/\d+ GB livres/.test(all), 'CPU, RAM e disco');
     }
@@ -201,13 +202,13 @@ try {
 
   if (WINDOWS) {
     // Dados vencidos: a barra consulta o Windows de novo.
-    writeFileSync(windowsCache, JSON.stringify({ at: Date.now() - 120000, battery: { pct: 50, status: 1 }, hz: 1, disks: [], gpuTimes: {}, gpu: null }));
+    writeFileSync(windowsCache, JSON.stringify({ at: Date.now() - 120000, battery: { pct: 50, status: 1 }, ramMhz: 1, disks: [], gpuTimes: {}, gpu: null }));
     const { all, ms } = run('statusline.mjs', { model: { display_name: 'Opus' }, cwd: os.homedir() });
     const refreshed = JSON.parse(readFileSync(windowsCache, 'utf8'));
     const fresh = Date.now() - refreshed.at < 15000;
     check(fresh && refreshed.disks.length > 0 && all.includes(`discos ${refreshed.disks[0].id}`), `Windows consultado de novo quando os dados vencem (${ms}ms)`);
     if (fresh && refreshed.battery) check(all.includes(`bateria ${refreshed.battery.pct}%`), `bateria real: ${refreshed.battery.pct}%`);
-    if (fresh && refreshed.hz) check(all.includes(`tela ${refreshed.hz} Hz`), `taxa de atualização real: ${refreshed.hz} Hz`);
+    if (fresh && refreshed.ramMhz) check(all.includes(`${refreshed.ramMhz} MHz`), `velocidade real da RAM: ${refreshed.ramMhz} MHz`);
 
     // Uso da GPU pela diferença entre leituras: simula 25% de uso nos últimos 30 segundos.
     const luids = Object.keys(refreshed.gpuTimes);

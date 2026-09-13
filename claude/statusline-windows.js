@@ -1,6 +1,6 @@
 // Coleta dados do Windows para a status line via WMI e imprime uma informação por linha:
 //   BAT <porcentagem> <status>     bateria (só em notebooks)
-//   HZ <hertz>                     taxa de atualização da tela
+//   RAM <mhz>                      velocidade em que a memória está rodando
 //   DISK <letra> <livre> <total>   cada disco local, em bytes
 //   GPU <placa> <tempo>            tempo de uso 3D acumulado de cada placa, em 100 ns
 // Roda com: cscript //nologo statusline-windows.js (bem mais rápido que abrir o PowerShell).
@@ -12,9 +12,14 @@ if (!batteries.atEnd()) {
   out.push("BAT " + batteries.item().EstimatedChargeRemaining + " " + batteries.item().BatteryStatus);
 }
 
-var videos = new Enumerator(wmi.ExecQuery("SELECT CurrentRefreshRate FROM Win32_VideoController"));
-for (; !videos.atEnd(); videos.moveNext()) {
-  if (videos.item().CurrentRefreshRate) out.push("HZ " + videos.item().CurrentRefreshRate);
+// Velocidade configurada da memória; se o módulo não informar, a velocidade nominal.
+var modules = new Enumerator(wmi.ExecQuery("SELECT Speed, ConfiguredClockSpeed FROM Win32_PhysicalMemory"));
+for (; !modules.atEnd(); modules.moveNext()) {
+  var mhz = modules.item().ConfiguredClockSpeed || modules.item().Speed;
+  if (mhz) {
+    out.push("RAM " + mhz);
+    break;
+  }
 }
 
 var disks = new Enumerator(wmi.ExecQuery("SELECT DeviceID, FreeSpace, Size FROM Win32_LogicalDisk WHERE DriveType = 3"));
