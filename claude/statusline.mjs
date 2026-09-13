@@ -149,20 +149,36 @@ const cpuPercent = () => {
   return now.pct;
 };
 
-// Bateria via WMI com cscript (~150ms), consultada no máximo uma vez por minuto.
-const BATTERY_CACHE = cacheFile('battery');
-const BATTERY_SCRIPT = fileURLToPath(new URL('./statusline-battery.js', import.meta.url));
+// Bateria, discos, taxa de atualização da tela e GPU via WMI: um cscript de ~300ms,
+// rodado no máximo a cada 25 segundos. O uso da GPU é a média desde a leitura anterior.
+const WINDOWS_CACHE = cacheFile('windows');
+const WINDOWS_SCRIPT = fileURLToPath(new URL('./statusline-windows.js', import.meta.url));
 const CHARGING = new Set([6, 7, 8, 9]);
 
-const battery = () => {
-  if (process.platform !== 'win32' || !existsSync(BATTERY_SCRIPT)) return null;
-  let cached = readJson(BATTERY_CACHE);
-  if (!cached || !(Date.now() - cached.at < 60000)) {
-    const match = run('cscript.exe', ['//nologo', BATTERY_SCRIPT])?.match(/^(\d+)\s+(\d+)/);
-    cached = { at: Date.now(), pct: match ? Number(match[1]) : null, status: match ? Number(match[2]) : null };
-    writeJson(BATTERY_CACHE, cached);
+const windowsInfo = () => {
+  if (process.platform !== 'win32' || !existsSync(WINDOWS_SCRIPT)) return null;
+  const cached = readJson(WINDOWS_CACHE);
+  if (cached && Date.now() - cached.at < 25000) return cached;
+  const out = run('cscript.exe', ['//nologo', WINDOWS_SCRIPT]);
+  if (out == null) return cached;
+  const info = { at: Date.now(), battery: null, hz: null, disks: [], gpuTimes: {}, gpu: null };
+  for (const line of out.split(/\r?\n/)) {
+    const [kind, ...values] = line.trim().split(' ');
+    if (kind === 'BAT') info.battery = { pct: Number(values[0]), status: Number(values[1]) };
+    else if (kind === 'HZ') info.hz = Math.max(info.hz ?? 0, Number(values[0]));
+    else if (kind === 'DISK') info.disks.push({ id: values[0], free: Number(values[1]), size: Number(values[2]) });
+    else if (kind === 'GPU') info.gpuTimes[values[0]] = Number(values[1]);
   }
-  return cached.pct != null ? cached : null;
+  // Tempo de GPU gasto no intervalo (100 ns) dividido pelo tempo decorrido, na placa mais ocupada.
+  if (cached?.gpuTimes && info.at - cached.at < 300000) {
+    const elapsed = (info.at - cached.at) * 1e4;
+    const usage = Object.entries(info.gpuTimes)
+      .filter(([luid, time]) => cached.gpuTimes[luid] != null && time >= cached.gpuTimes[luid])
+      .map(([luid, time]) => ((time - cached.gpuTimes[luid]) / elapsed) * 100);
+    if (usage.length) info.gpu = Math.min(100, Math.round(Math.max(...usage)));
+  }
+  writeJson(WINDOWS_CACHE, info);
+  return info;
 };
 
 // Procura um arquivo subindo a partir da pasta atual, sem sair do repositório git.
@@ -333,19 +349,39 @@ if (pkg) {
   if (version) segments.push(`${LABEL}python ${STRONG}${version}`);
 }
 
+const win = windowsInfo();
+
+// CPU, GPU e RAM (usada/total)
 const cpu = cpuPercent();
-const ram = Math.round(100 * (1 - os.freemem() / os.totalmem()));
-segments.push([cpu != null ? percent('cpu', cpu) : null, percent('ram', ram)].filter(Boolean).join(DOT));
+const hardware = [];
+if (cpu != null) hardware.push(percent('cpu', cpu));
+if (win?.gpu != null) hardware.push(percent('gpu', win.gpu));
+const totalGb = os.totalmem() / 1024 ** 3;
+const usedGb = totalGb - os.freemem() / 1024 ** 3;
+const ramPct = Math.round((usedGb / totalGb) * 100);
+hardware.push(`${LABEL}ram ${STRONG}${decimal(usedGb, 1)}${LABEL}/${decimal(totalGb, 1)} GB ${levelColor(ramPct)}${ramPct}%`);
+segments.push(hardware.join(DOT));
 
-try {
-  const disk = statfsSync(cwd);
-  const freeGb = (disk.bavail * disk.bsize) / 1024 ** 3;
-  const freeRatio = disk.bavail / disk.blocks;
-  const color = freeRatio < 0.1 ? WARN : freeRatio < 0.25 ? CAUTION : INFO;
-  segments.push(`${LABEL}disco ${color}${decimal(freeGb, freeGb < 10 ? 1 : 0)} GB ${LABEL}livres`);
-} catch {}
+// Espaço livre de cada disco: no Windows, todos os discos locais; nos outros sistemas, o da pasta atual.
+const toGb = (bytes) => bytes / 1024 ** 3;
+let disks = win?.disks ?? [];
+if (!disks.length) {
+  try {
+    const disk = statfsSync(cwd);
+    disks = [{ id: '', free: disk.bavail * disk.bsize, size: disk.blocks * disk.bsize }];
+  } catch {}
+}
+if (disks.length) {
+  const text = disks.map(({ id, free, size }) => {
+    const ratio = free / size;
+    const color = ratio < 0.1 ? WARN : ratio < 0.25 ? CAUTION : INFO;
+    const freeGb = toGb(free);
+    return `${id ? `${LABEL}${id} ` : ''}${color}${decimal(freeGb, freeGb < 10 ? 1 : 0)}${LABEL}/${decimal(toGb(size), 0)} GB livres`;
+  });
+  segments.push(`${LABEL}discos ${text.join(DOT)}`);
+}
 
-const bat = battery();
+const bat = win?.battery;
 if (bat) {
   const color = bat.pct < 20 ? WARN : bat.pct < 50 ? CAUTION : INFO;
   let segment = `${LABEL}bateria ${color}${bat.pct}%`;
@@ -353,6 +389,8 @@ if (bat) {
   else if (bat.status === 2) segment += `${LABEL} na tomada`;
   segments.push(segment);
 }
+
+if (win?.hz) segments.push(`${LABEL}tela ${STRONG}${win.hz} Hz`);
 
 if (data.version) segments.push(`${LABEL}claude ${STRONG}v${data.version}`);
 

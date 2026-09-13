@@ -11,6 +11,8 @@ const scriptsDir = process.env.STATUSLINE_DIR ?? fileURLToPath(new URL('../claud
 const { visibleLength } = await import(pathToFileURL(path.join(scriptsDir, 'palette.mjs')).href);
 
 const BOM = String.fromCharCode(0xfeff);
+const WINDOWS = process.platform === 'win32';
+const GB = 1024 ** 3;
 const strip = (s) => s.replace(/\x1b\[[0-9;]*m/g, '').replace(/\x1b\]8;;[^\x1b]*\x1b\\/g, '');
 const nowSec = () => Math.floor(Date.now() / 1000);
 
@@ -85,8 +87,18 @@ try {
   );
   writeFileSync(cpuCache, JSON.stringify({ idle: cur.idle - 3000, total: cur.total - 4000, at: Date.now() - 30000 }));
 
-  const batteryCache = path.join(os.tmpdir(), 'claude-statusline-battery.json');
-  if (process.platform === 'win32') writeFileSync(batteryCache, JSON.stringify({ at: Date.now(), pct: 76, status: 2 }));
+  // Dados do Windows já coletados: bateria, tela, dois discos e uso da GPU.
+  const windowsCache = path.join(os.tmpdir(), 'claude-statusline-windows.json');
+  if (WINDOWS) {
+    writeFileSync(windowsCache, JSON.stringify({
+      at: Date.now(),
+      battery: { pct: 76, status: 2 },
+      hz: 144,
+      disks: [{ id: 'C:', free: 13.2 * GB, size: 118.2 * GB }, { id: 'D:', free: 864.4 * GB, size: 931.5 * GB }],
+      gpuTimes: {},
+      gpu: 37,
+    }));
+  }
 
   const full = {
     session_name: 'meu-projeto',
@@ -129,9 +141,14 @@ try {
     check(all.includes('custo $1,23 · $1,14/h') && all.includes('linhas +156 -23 · 165/h'), 'custo e linhas por hora');
     check(all.includes('duração 1h05m') && /\S{3} \d{2}\/\d{2} \d{2}:\d{2}/.test(all), 'data e duração');
     check(all.includes('projeto meu-app v1.2.3') && /node v\d+/.test(all), 'versão do projeto e do Node');
-    check(/cpu \d+% · ram \d+%/.test(all) && /disco \d+(,\d)? GB livres/.test(all), 'CPU, RAM e disco');
-    if (process.platform === 'win32') check(all.includes('bateria 76% na tomada'), 'bateria (valor salvo)');
     check(all.includes('claude v2.1.270'), 'versão do Claude Code');
+    if (WINDOWS) {
+      check(/cpu \d+% · gpu 37% · ram \d+,\d\/\d+,\d GB \d+%/.test(all), 'CPU, GPU e RAM em GB');
+      check(all.includes('discos C: 13/118 GB livres · D: 864/932 GB livres'), 'todos os discos');
+      check(all.includes('bateria 76% na tomada') && all.includes('tela 144 Hz'), 'bateria e taxa de atualização da tela');
+    } else {
+      check(/cpu \d+% · ram \d+,\d\/\d+,\d GB \d+%/.test(all) && /discos \d+(,\d)?\/\d+ GB livres/.test(all), 'CPU, RAM e disco');
+    }
     const saved = JSON.parse(readFileSync(cpuCache, 'utf8'));
     check(typeof saved.at === 'number' && typeof saved.pct === 'number', 'amostra de CPU salva com horário e valor');
   }
@@ -152,6 +169,7 @@ try {
     narrow.lines.forEach((l) => console.log('  ' + strip(l)));
     check(narrow.lines.every((l) => visibleLength(l) <= 96), 'nenhuma linha passa da largura (100 colunas)');
     check(narrow.lines.length > wide.lines.length, 'terminal mais largo usa menos linhas');
+    check(wide.lines.slice(-3).map((l) => [...strip(l)].slice(-9).join('')).join('/') === ' ▐▛███▜▌ /▝▜█████▛▘/  ▘▘ ▝▝  ', 'bonequinho no canto inferior direito');
   }
 
   {
@@ -181,13 +199,27 @@ try {
     else console.log('PULADO python não instalado');
   }
 
-  if (process.platform === 'win32') {
-    writeFileSync(batteryCache, JSON.stringify({ at: Date.now() - 120000, pct: 50, status: 1 }));
+  if (WINDOWS) {
+    // Dados vencidos: a barra consulta o Windows de novo.
+    writeFileSync(windowsCache, JSON.stringify({ at: Date.now() - 120000, battery: { pct: 50, status: 1 }, hz: 1, disks: [], gpuTimes: {}, gpu: null }));
     const { all, ms } = run('statusline.mjs', { model: { display_name: 'Opus' }, cwd: os.homedir() });
-    const refreshed = JSON.parse(readFileSync(batteryCache, 'utf8'));
+    const refreshed = JSON.parse(readFileSync(windowsCache, 'utf8'));
     const fresh = Date.now() - refreshed.at < 15000;
-    check(fresh, `bateria consultada de novo quando o valor salvo expira (${ms}ms)`);
-    if (fresh && refreshed.pct != null) check(all.includes(`bateria ${refreshed.pct}%`), `bateria real: ${refreshed.pct}%`);
+    check(fresh && refreshed.disks.length > 0 && all.includes(`discos ${refreshed.disks[0].id}`), `Windows consultado de novo quando os dados vencem (${ms}ms)`);
+    if (fresh && refreshed.battery) check(all.includes(`bateria ${refreshed.battery.pct}%`), `bateria real: ${refreshed.battery.pct}%`);
+    if (fresh && refreshed.hz) check(all.includes(`tela ${refreshed.hz} Hz`), `taxa de atualização real: ${refreshed.hz} Hz`);
+
+    // Uso da GPU pela diferença entre leituras: simula 25% de uso nos últimos 30 segundos.
+    const luids = Object.keys(refreshed.gpuTimes);
+    if (luids.length) {
+      const earlier = Object.fromEntries(luids.map((luid) => [luid, refreshed.gpuTimes[luid] - 30000 * 1e4 * 0.25]));
+      writeFileSync(windowsCache, JSON.stringify({ ...refreshed, at: Date.now() - 30000, gpuTimes: earlier, gpu: null }));
+      const { all: withGpu } = run('statusline.mjs', { model: { display_name: 'Opus' }, cwd: os.homedir() });
+      const gpu = Number(/gpu (\d+)%/.exec(withGpu)?.[1]);
+      check(gpu >= 24 && gpu <= 35, `uso da GPU calculado pela diferença entre leituras (${gpu}%)`);
+    } else {
+      console.log('PULADO nenhuma GPU com contador de uso');
+    }
   }
 
   {

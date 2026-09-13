@@ -43,9 +43,9 @@ A paleta é baseada no [Dracula](https://draculatheme.com). O visual foi pensado
 ## Prévia
 
 ```
-sessão meu-projeto │ modelo Opus · esforço xhigh │ pasta claude-code-dracula-black │ repo gblsun/claude-code-dracula-black │ branch main · 1 alterado │ último commit há 38m      ▐▛███▜▌
-contexto ███░░░░░░░ 32% · 64k de 200k │ limite 5h 24% · renova em 2h12m │ limite semanal 41% · renova em 3d03h │ cache ● ativo · expira em 42m · acerto 91%                      ▝▜█████▛▘
-custo $1,23 · $1,14/h │ dom 13/09 02:16 │ duração 1h05m │ linhas +156 -23 · 165/h │ cpu 58% · ram 85% │ disco 13 GB livres │ bateria 98% na tomada │ claude v2.1.270               ▘▘ ▝▝
+sessão meu-projeto │ modelo Opus · esforço xhigh │ pasta claude-code-dracula-black │ repo gblsun/claude-code-dracula-black │ branch main · 5 alterados │ último commit há 2m                                    ▐▛███▜▌
+contexto ███░░░░░░░ 32% · 64k de 200k │ limite 5h 24% · renova em 2h12m │ limite semanal 41% · renova em 3d03h │ cache ● ativo · expira em 42m · acerto 91% │ custo $1,23 · $1,14/h │ dom 13/09 02:39          ▝▜█████▛▘
+duração 1h05m │ linhas +156 -23 · 165/h │ cpu 61% · gpu 48% · ram 14,0/15,8 GB 89% │ discos C: 13/118 GB livres · D: 864/932 GB livres │ bateria 98% na tomada │ tela 59 Hz │ claude v2.1.270                    ▘▘ ▝▝
 ```
 
 A barra distribui os dados em quantas linhas forem necessárias para caber na largura do terminal: em tela larga ficam 3 linhas, em tela estreita, mais. Um dado só aparece quando existe. Por exemplo, git só dentro de um repositório, e PR só com um pull request aberto.
@@ -59,7 +59,7 @@ O bonequinho do Claude Code, o mesmo da tela de abertura, fica alinhado à direi
 | `claude/statusline.mjs` | Status line principal |
 | `claude/subagent-statusline.mjs` | Linha de cada subagente: status, modelo, tokens, tempo e tarefa |
 | `claude/palette.mjs` | Paleta Dracula e utilitários usados pelos dois scripts |
-| `claude/statusline-battery.js` | Lê a bateria no Windows via WMI (usado pela status line) |
+| `claude/statusline-windows.js` | Lê bateria, GPU, discos e taxa de atualização da tela no Windows via WMI (usado pela status line) |
 | `claude/tarefa-concluida.ps1` | Toque de tarefa concluída, chamado pelo hook `Stop` |
 | `claude/sons/tarefa-concluida.wav` | Som do toque: o *Secret Sound* de The Legend of Zelda, recriado por síntese |
 | `claude/sons/gerar-toque-zelda.mjs` | Gera o `.wav` com o jingle do Zelda; ajuste o volume ou as notas |
@@ -100,7 +100,9 @@ O bonequinho do Claude Code, o mesmo da tela de abertura, fica alinhado à direi
 |---|---|
 | data e hora · `duração` | Relógio e há quanto tempo a sessão está aberta |
 | `linhas` | Linhas adicionadas e removidas pelo Claude, e a média por hora |
-| `cpu` · `ram` · `disco` · `bateria` | Uso do computador |
+| `cpu` · `gpu` · `ram` | Uso do processador, da placa de vídeo e da memória (usada/total em GB) |
+| `discos` | Espaço livre e total de cada disco (C:, D:…) |
+| `bateria` · `tela` | Carga da bateria e taxa de atualização do monitor, em Hz |
 | `claude` | Versão do Claude Code |
 
 ## Toque de tarefa concluída
@@ -134,7 +136,7 @@ Respostas rápidas não disparam nada, para não virar ruído. O hook roda em se
 - Node.js 18.15 ou mais novo
 - Git 2.35 ou mais novo (para contar o stash)
 - Windows Terminal 1.21 ou mais novo, para o espaçamento entre linhas (testado na 1.24)
-- Bateria e toque de tarefa concluída: só no Windows (usam `cscript` e Windows PowerShell 5.1)
+- Bateria, GPU, todos os discos, taxa da tela e toque de tarefa concluída: só no Windows (usam `cscript` e Windows PowerShell 5.1). Nos outros sistemas, a barra mostra só o disco da pasta atual
 
 ## Instalação
 
@@ -144,7 +146,7 @@ Respostas rápidas não disparam nada, para não virar ruído. O hook roda em se
    git clone https://github.com/gblsun/claude-code-dracula-black.git
    cd claude-code-dracula-black
    New-Item -ItemType Directory -Force "$HOME\.claude\themes", "$HOME\.claude\sons" | Out-Null
-   Copy-Item claude\*.mjs, claude\statusline-battery.js, claude\tarefa-concluida.ps1 "$HOME\.claude\"
+   Copy-Item claude\*.mjs, claude\statusline-windows.js, claude\tarefa-concluida.ps1 "$HOME\.claude\"
    Copy-Item claude\themes\dracula.json "$HOME\.claude\themes\"
    Copy-Item claude\sons\* "$HOME\.claude\sons\"
    ```
@@ -171,7 +173,7 @@ Respostas rápidas não disparam nada, para não virar ruído. O hook roda em se
 
 - **Tokens da sessão:** somados a partir do histórico da conversa (`transcript_path`), lendo só o trecho novo a cada atualização. O histórico usa um formato interno do Claude Code; se esse formato mudar, o dado apenas deixa de aparecer.
 - **CPU:** média desde a atualização anterior da barra. Por isso aparece a partir da segunda atualização.
-- **Bateria:** consultada no máximo uma vez por minuto.
+- **Bateria, GPU, discos e tela:** lidos do Windows (WMI) numa única consulta de ~300ms, feita no máximo a cada 25 segundos. O uso da GPU é a média entre duas leituras, por isso aparece a partir da segunda atualização. A consulta usa contadores do Windows e não acorda a placa de vídeo dedicada.
 - **Arquivos temporários:** os valores guardados entre execuções ficam em `claude-statusline-*.json`, na pasta temporária do sistema.
 - **Relógio:** `refreshInterval: 30` faz a barra atualizar sozinha a cada 30 segundos, mesmo sem mensagens novas.
 - **Duração da tarefa:** o toque mede do último prompt que você digitou até o fim da resposta, lendo o final do histórico da conversa.
