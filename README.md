@@ -197,7 +197,7 @@ O trecho `windows-terminal/dracula-black.json` configura:
 |---|---|
 | Esquema de cores | **Dracula Black**: fundo `#000000`, texto `#F8F8F2` e cursor roxo |
 | Tema da janela | Barra de abas e título pretos; a aba ativa fica em cinza bem escuro |
-| Transparência | `opacity: 35` com desfoque acrílico (`useAcrylic`) |
+| Transparência | `opacity: 25` com desfoque acrílico (`useAcrylic`) |
 | Fonte | Cascadia Code, com linhas 1,2× mais altas (`cellHeight`) |
 | Espaçamento | Margem de 24 px embaixo (`padding: "8, 8, 8, 24"`) |
 | Cursor | Formato de barra |
