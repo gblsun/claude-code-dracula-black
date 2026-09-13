@@ -1,5 +1,5 @@
 {
-    "theme": "Dracula Black",
+    "theme": "Midnight Synthwave",
     "keybindings":
     [
         {
@@ -11,7 +11,7 @@
     {
         "defaults":
         {
-            "colorScheme": "Dracula Black",
+            "colorScheme": "Midnight Synthwave",
             "cursorShape": "bar",
             "font":
             {
@@ -32,7 +32,7 @@
                 "name": "Claude Code",
                 "startingDirectory": "%USERPROFILE%",
                 "suppressApplicationTitle": true,
-                "tabColor": "#BD93F9",
+                "tabColor": "#FF2E97",
                 "tabTitle": "Claude"
             }
         ]
@@ -40,33 +40,33 @@
     "schemes":
     [
         {
-            "name": "Dracula Black",
+            "name": "Midnight Synthwave",
             "background": "#000000",
-            "foreground": "#F8F8F2",
-            "cursorColor": "#BD93F9",
-            "selectionBackground": "#44475A",
-            "black": "#21222C",
-            "blue": "#BD93F9",
-            "cyan": "#8BE9FD",
-            "green": "#50FA7B",
-            "purple": "#FF79C6",
-            "red": "#FF5555",
-            "white": "#F8F8F2",
-            "yellow": "#F1FA8C",
-            "brightBlack": "#6272A4",
-            "brightBlue": "#D6ACFF",
-            "brightCyan": "#A4FFFF",
-            "brightGreen": "#69FF94",
-            "brightPurple": "#FF92DF",
-            "brightRed": "#FF6E6E",
+            "foreground": "#D8CFE6",
+            "cursorColor": "#FF2E97",
+            "selectionBackground": "#2A1745",
+            "black": "#0B0614",
+            "blue": "#7B61FF",
+            "cyan": "#36F9F6",
+            "green": "#72F1B8",
+            "purple": "#FF2E97",
+            "red": "#FE4450",
+            "white": "#D8CFE6",
+            "yellow": "#FEDE5D",
+            "brightBlack": "#4B3D66",
+            "brightBlue": "#A391FF",
+            "brightCyan": "#8AFCFA",
+            "brightGreen": "#9FF7CF",
+            "brightPurple": "#FF7EC1",
+            "brightRed": "#FF6B7A",
             "brightWhite": "#FFFFFF",
-            "brightYellow": "#FFFFA5"
+            "brightYellow": "#FFF08A"
         }
     ],
     "themes":
     [
         {
-            "name": "Dracula Black",
+            "name": "Midnight Synthwave",
             "window":
             {
                 "applicationTheme": "dark",
@@ -79,7 +79,7 @@
             },
             "tab":
             {
-                "background": "#1E1F29FF",
+                "background": "#1A0B2EFF",
                 "unfocusedBackground": "#00000000",
                 "showCloseButton": "hover"
             }

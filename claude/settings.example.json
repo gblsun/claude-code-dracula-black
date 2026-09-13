@@ -1,5 +1,5 @@
 {
-  "theme": "custom:dracula",
+  "theme": "custom:midnight-synthwave",
   "statusLine": {
     "type": "command",
     "command": "node ~/.claude/statusline.mjs",
@@ -26,21 +26,21 @@
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": [
-      "Pensando",
+      "Sintetizando",
+      "Acendendo o neon",
+      "Cruzando o grid",
+      "Rebobinando a fita",
+      "Afinando o sintetizador",
+      "Pilotando no pôr do sol",
       "Tramando",
-      "Cozinhando",
-      "Matutando",
-      "Arquitetando",
-      "Garimpando",
-      "Lapidando",
-      "Destrinchando",
       "Maquinando",
-      "Rabiscando",
+      "Garimpando",
+      "Destrinchando",
+      "Decifrando",
+      "Lapidando",
       "Conjurando",
-      "Fuçando",
       "Costurando",
-      "Afinando",
-      "Decifrando"
+      "Matutando"
     ]
   },
   "spinnerTipsOverride": {

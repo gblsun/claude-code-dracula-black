@@ -1,6 +1,6 @@
 ```
 ╭──────────────────────────────────────────────────────────────────────────╮
-│ ● ● ●                 claude code · dracula black                        │
+│ ● ● ●               claude code · midnight synthwave                     │
 ├──────────────────────────────────────────────────────────────────────────┤
 │              .                                          ·                │
 │  ·                                                                .      │
@@ -28,19 +28,19 @@
 ╰──────────────────────────────────────────────────────────────────────────╯
 ```
 
-<h1 align="center">Claude Code · Dracula Black</h1>
+<h1 align="center">Claude Code · Midnight Synthwave</h1>
 
 <p align="center">
-  <b>Um visual escuro, detalhado e acessível para o Claude Code no Windows Terminal.</b><br>
-  Status line cheia de dados, bonequinho no canto, jingle do Zelda quando a tarefa termina e tema Dracula com fundo preto.
+  <b>Um visual synthwave de madrugada para o Claude Code no Windows Terminal: escuro, detalhado e acessível.</b><br>
+  Neon rosa e ciano sobre fundos quase pretos, status line cheia de dados, bonequinho no canto e jingle do Zelda quando a tarefa termina.
 </p>
 
 <p align="center">
   <img alt="Claude Code 2.1.270" src="https://img.shields.io/badge/Claude_Code-2.1.270-D77757?style=for-the-badge&logo=claude&logoColor=white">
-  <img alt="Windows Terminal 1.24" src="https://img.shields.io/badge/Windows_Terminal-1.24-44475A?style=for-the-badge&logo=windowsterminal&logoColor=white">
+  <img alt="Windows Terminal 1.24" src="https://img.shields.io/badge/Windows_Terminal-1.24-2A1745?style=for-the-badge&logo=windowsterminal&logoColor=white">
   <img alt="Node.js 18.15 ou mais novo" src="https://img.shields.io/badge/Node.js-18.15%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white">
-  <img alt="Tema Dracula Black" src="https://img.shields.io/badge/tema-Dracula_Black-282A36?style=for-the-badge&logo=dracula&logoColor=BD93F9">
-  <img alt="Licença MIT" src="https://img.shields.io/badge/licen%C3%A7a-MIT-BD93F9?style=for-the-badge">
+  <img alt="Tema Midnight Synthwave" src="https://img.shields.io/badge/tema-Midnight_Synthwave-FF2E97?style=for-the-badge&labelColor=0C0714">
+  <img alt="Licença MIT" src="https://img.shields.io/badge/licen%C3%A7a-MIT-36F9F6?style=for-the-badge&labelColor=0C0714">
 </p>
 
 <p align="center">
@@ -81,16 +81,16 @@
 | 📐 **Ajuste à largura** | Os dados se distribuem em quantas linhas couberem no terminal: 3 em tela larga, mais em tela estreita. |
 | 🦀 **Bonequinho do Claude Code** | O mesmo desenho da tela de abertura, fixo no canto inferior direito da barra. |
 | 🤖 **Linha dos subagentes** | Cada agente em paralelo aparece com status, modelo, uso de tokens, tempo e tarefa. |
-| 🧛 **Tema Dracula Black** | Interface do Claude em roxo, ciano e rosa sobre fundo preto, com base no tema para daltonismo. |
+| 🌆 **Tema Midnight Synthwave** | Rosa neon, ciano e roxo sobre fundos quase pretos com um fio de violeta, com base no tema para daltonismo. |
 | 🪟 **Windows Terminal** | Fundo preto translúcido, abas pretas, Cascadia Code, linhas mais espaçadas, perfil "Claude Code" e modo Quake. |
 | 🔔 **Toque de tarefa concluída** | Notificação do Windows com resumo e o *Secret Sound* de The Legend of Zelda quando uma tarefa longa termina. |
-| ⏳ **Spinner em português** | "Tramando", "Garimpando", "Destrinchando"… no lugar dos verbos em inglês. |
+| ⏳ **Spinner em português** | "Sintetizando", "Cruzando o grid", "Rebobinando a fita"… no lugar dos verbos em inglês. |
 | ♿ **Acessível** | Níveis vão de ciano para amarelo e laranja (nunca de verde para vermelho), e todo estado vem acompanhado de texto. |
 
 ## Prévia
 
 ```
-sessão meu-projeto │ modelo Opus · esforço xhigh │ pasta claude-code-dracula-black │ repo gblsun/claude-code-dracula-black │ branch main · 3 alterados │ último commit há 44m                                   ▐▛███▜▌
+sessão meu-projeto │ modelo Opus · esforço xhigh │ pasta claude-code-midnight-synthwave │ repo gblsun/claude-code-midnight-synthwave │ branch main · 3 alterados │ último commit há 44m                           ▐▛███▜▌
 contexto ███░░░░░░░ 32% · 64k de 200k │ limite 5h 24% · renova em 2h12m │ limite semanal 41% · renova em 3d03h │ cache ● ativo · expira em 42m · acerto 91% │ custo $1,23 · $1,14/h │ dom 13/09 03:25          ▝▜█████▛▘
 duração 1h05m │ linhas +156 -23 · 165/h │ cpu 36% · gpu 25% · ram 10,5/15,8 GB 67% · 2400 MHz │ discos C: 15/118 GB livres · D: 865/932 GB livres │ bateria 16% na tomada │ claude v2.1.270                      ▘▘ ▝▝
 ```
@@ -140,15 +140,20 @@ Um dado só aparece quando existe: git só dentro de um repositório, PR só com
 
 | Cor | Quando aparece |
 |---|---|
-| Ciano | Nível tranquilo (abaixo de 50%), cache ativo, PR aprovado, linhas adicionadas |
-| Amarelo | Atenção (50–79%), commits para baixar, PR pendente |
-| Laranja | Perto do limite (80% ou mais), arquivos alterados, alterações pedidas, disco ou bateria baixos |
-| Lavanda | Rótulos de cada dado |
-| Cinza-azulado | Separadores e a parte vazia das barras |
+| Rosa neon `#ff2e97` | Modelo, PR, custo, duração e versão do projeto |
+| Roxo neon `#b967ff` | Nome da sessão, branch e agente |
+| Ciano neon `#36f9f6` | Nível tranquilo (abaixo de 50%), pasta, repositório, cache ativo, PR aprovado, linhas adicionadas |
+| Amarelo `#fede5d` | Atenção (50–79%), commits para baixar, fast mode, PR pendente |
+| Laranja `#ff8b39` | Perto do limite (80% ou mais), arquivos alterados, alterações pedidas, disco ou bateria baixos |
+| Branco lilás `#e5dcf2` | Valores |
+| Lavanda escura `#9a86c2` | Rótulos de cada dado |
+| Roxo apagado `#4b3d66` | Separadores |
+
+Enquanto o nível está abaixo de 50%, a parte cheia das barras ganha um degradê **ciano → rosa**.
 
 ### Bonequinho
 
-O bonequinho do Claude Code fica alinhado à direita das últimas 3 linhas da barra, em laranja:
+O bonequinho do Claude Code fica alinhado à direita das últimas 3 linhas da barra, na cor laranja do Claude:
 
 ```
  ▐▛███▜▌
@@ -169,7 +174,7 @@ Quando o Claude roda agentes em paralelo, cada um ganha uma linha própria no pa
 
 | Parte | Significado |
 |---|---|
-| `●` | Status: ciano rodando, cinza terminado, laranja com erro |
+| `●` | Status: ciano rodando, roxo apagado terminado, laranja com erro |
 | nome | Nome do agente |
 | modelo · esforço | Modelo usado (sem o prefixo `claude-`) e nível de esforço |
 | `█░░░░ 42k tok` | Quanto da memória do agente já foi usado |
@@ -178,35 +183,37 @@ Quando o Claude roda agentes em paralelo, cada um ganha uma linha própria no pa
 
 ## Tema do Claude Code
 
-O tema **Dracula Black** (`claude/themes/dracula.json`) parte do `dark-daltonized` e troca só as cores de destaque:
+O tema **Midnight Synthwave** (`claude/themes/midnight-synthwave.json`) parte do `dark-daltonized` e troca as cores de destaque:
 
-- roxo no spinner e no destaque principal;
-- ciano no plan mode e nas sugestões;
-- rosa nas caixas de permissão;
-- fundos quase pretos atrás das suas mensagens, dos comandos `!` e da seleção.
+- rosa neon no spinner e no destaque principal;
+- ciano neon no plan mode e nas sugestões;
+- roxo neon nas caixas de permissão;
+- borda da caixa de digitação em roxo escuro;
+- fundos quase pretos com um fio de violeta atrás das suas mensagens, dos comandos `!` e da seleção;
+- texto em branco lilás, que ofusca menos que o branco puro.
 
 As cores de sucesso, erro, aviso e diff continuam as do tema para daltonismo.
 
-Para ajustar com preview ao vivo: `/theme`, selecione **Dracula Black** e aperte `Ctrl+E`.
+Para ajustar com preview ao vivo: `/theme`, selecione **Midnight Synthwave** e aperte `Ctrl+E`.
 
 ## Windows Terminal
 
-O trecho `windows-terminal/dracula-black.json` configura:
+O trecho `windows-terminal/midnight-synthwave.json` configura:
 
 | Item | Configuração |
 |---|---|
-| Esquema de cores | **Dracula Black**: fundo `#000000`, texto `#F8F8F2` e cursor roxo |
-| Tema da janela | Barra de abas e título pretos; a aba ativa fica em cinza bem escuro |
+| Esquema de cores | **Midnight Synthwave**: fundo `#000000`, texto `#D8CFE6`, cursor rosa neon e cores ANSI neon |
+| Tema da janela | Barra de abas e título pretos; a aba ativa fica em violeta escuro `#1A0B2E` |
 | Transparência | `opacity: 25` com desfoque acrílico (`useAcrylic`) |
 | Fonte | Cascadia Code, com linhas 1,2× mais altas (`cellHeight`) |
 | Espaçamento | Margem de 24 px embaixo (`padding: "8, 8, 8, 24"`) |
 | Cursor | Formato de barra |
-| Perfil "Claude Code" | Abre direto no Claude, com ícone ✳️, aba roxa e título fixo "Claude" |
+| Perfil "Claude Code" | Abre direto no Claude, com ícone ✳️, aba rosa neon e título fixo "Claude" |
 | Modo Quake | `Win` + tecla à esquerda do `1` faz o terminal descer do topo da tela |
 
 ## Spinner em português
 
-Enquanto o Claude trabalha, o spinner mostra verbos em português: *Pensando, Tramando, Cozinhando, Matutando, Arquitetando, Garimpando, Lapidando, Destrinchando, Maquinando, Rabiscando, Conjurando, Fuçando, Costurando, Afinando e Decifrando*.
+Enquanto o Claude trabalha, o spinner mostra verbos em português com um toque synthwave: *Sintetizando, Acendendo o neon, Cruzando o grid, Rebobinando a fita, Afinando o sintetizador, Pilotando no pôr do sol, Tramando, Maquinando, Garimpando, Destrinchando, Decifrando, Lapidando, Conjurando, Costurando e Matutando*.
 
 Junto das dicas padrão, entram 5 dicas em português:
 - atalho para quebrar linha;
@@ -238,24 +245,24 @@ Respostas rápidas não disparam nada, para não virar ruído. O hook roda em se
 ## Estrutura do repositório
 
 ```
-claude-code-dracula-black/
-├── claude/                        → arquivos que vão para ~/.claude
-│   ├── statusline.mjs             → status line principal
-│   ├── subagent-statusline.mjs    → linha de cada subagente
-│   ├── palette.mjs                → paleta Dracula e utilitários compartilhados
-│   ├── statusline-windows.js      → coletor de bateria, RAM, discos e GPU (WMI)
-│   ├── tarefa-concluida.ps1       → toque de tarefa concluída (hook Stop)
-│   ├── settings.example.json      → trecho do settings.json do Claude Code
+claude-code-midnight-synthwave/
+├── claude/                           → arquivos que vão para ~/.claude
+│   ├── statusline.mjs                → status line principal
+│   ├── subagent-statusline.mjs       → linha de cada subagente
+│   ├── palette.mjs                   → paleta Midnight Synthwave e utilitários compartilhados
+│   ├── statusline-windows.js         → coletor de bateria, RAM, discos e GPU (WMI)
+│   ├── tarefa-concluida.ps1          → toque de tarefa concluída (hook Stop)
+│   ├── settings.example.json         → trecho do settings.json do Claude Code
 │   ├── themes/
-│   │   └── dracula.json           → tema Dracula Black
+│   │   └── midnight-synthwave.json   → tema Midnight Synthwave
 │   └── sons/
-│       ├── tarefa-concluida.wav   → Secret Sound do Zelda, recriado por síntese
-│       ├── gerar-toque-zelda.mjs  → gera o .wav do jingle
-│       └── gerar-toque.mjs        → alternativa: arpejo de sino original
+│       ├── tarefa-concluida.wav      → Secret Sound do Zelda, recriado por síntese
+│       ├── gerar-toque-zelda.mjs     → gera o .wav do jingle
+│       └── gerar-toque.mjs           → alternativa: arpejo de sino original
 ├── windows-terminal/
-│   └── dracula-black.json         → trecho do settings.json do Windows Terminal
+│   └── midnight-synthwave.json       → trecho do settings.json do Windows Terminal
 ├── test/
-│   └── statusline.test.mjs        → testes com dados simulados
+│   └── statusline.test.mjs           → testes com dados simulados
 ├── LICENSE
 └── README.md
 ```
@@ -275,19 +282,19 @@ claude-code-dracula-black/
 **1. Clone o repositório e copie os arquivos para `~/.claude`** (PowerShell):
 
 ```powershell
-git clone https://github.com/gblsun/claude-code-dracula-black.git
-cd claude-code-dracula-black
+git clone https://github.com/gblsun/claude-code-midnight-synthwave.git
+cd claude-code-midnight-synthwave
 New-Item -ItemType Directory -Force "$HOME\.claude\themes", "$HOME\.claude\sons" | Out-Null
 Copy-Item claude\*.mjs, claude\statusline-windows.js, claude\tarefa-concluida.ps1 "$HOME\.claude\"
-Copy-Item claude\themes\dracula.json "$HOME\.claude\themes\"
+Copy-Item claude\themes\midnight-synthwave.json "$HOME\.claude\themes\"
 Copy-Item claude\sons\* "$HOME\.claude\sons\"
 ```
 
 **2. Configure o Claude Code.** Mescle o conteúdo de `claude/settings.example.json` no seu `~/.claude/settings.json`. No hook `Stop`, troque `SEU_USUARIO` pelo nome da sua pasta de usuário do Windows.
 
-**3. Configure o Windows Terminal.** Abra as configurações em JSON (`Ctrl+Shift+,`) e mescle o conteúdo de `windows-terminal/dracula-black.json`:
+**3. Configure o Windows Terminal.** Abra as configurações em JSON (`Ctrl+Shift+,`) e mescle o conteúdo de `windows-terminal/midnight-synthwave.json`:
 
-- `schemes`, `themes` e `theme`: fundo e barra de abas pretos;
+- `schemes`, `themes` e `theme`: fundo preto, abas pretas e cores neon;
 - `profiles.defaults`: transparência, fonte, espaçamento e cursor;
 - o perfil **Claude Code** (opcional). Se quiser, gere um GUID novo com `[guid]::NewGuid()`;
 - o atalho do **modo Quake** em `keybindings` (opcional).
@@ -299,7 +306,8 @@ Copy-Item claude\sons\* "$HOME\.claude\sons\"
 | Quero mudar… | Onde |
 |---|---|
 | Cores da barra | Constantes em `palette.mjs` |
-| Cores da interface | `/theme` → **Dracula Black** → `Ctrl+E` |
+| Degradê das barras | `BAR_GRADIENT` em `palette.mjs` |
+| Cores da interface | `/theme` → **Midnight Synthwave** → `Ctrl+E` |
 | Ordem ou quais dados aparecem | Cada dado é um bloco em `statusline.mjs`, na ordem em que aparece |
 | Cor do bonequinho | `MASCOT_COLOR` em `statusline.mjs` |
 | Frequência de atualização da barra | `refreshInterval` no `statusLine` do `settings.json` |
@@ -414,7 +422,7 @@ O terminal está com menos de ~74 colunas. Aumente a janela e ele volta.
 
 ## Créditos
 
-- Paleta baseada no [Dracula](https://draculatheme.com), licença MIT.
+- Cores inspiradas na estética synthwave dos anos 80.
 - Bonequinho: o desenho da tela de abertura do [Claude Code](https://code.claude.com), da Anthropic.
 - *Secret Sound*: jingle de The Legend of Zelda, da Nintendo, recriado por síntese.
 - GIF do Link: [GIPHY Gaming](https://giphy.com/gifs/link-the-legend-of-zelda-NVBR6cLvUjV9C).

@@ -1,0 +1,45 @@
+{
+  "name": "Midnight Synthwave",
+  "base": "dark-daltonized",
+  "overrides": {
+    "claude": "#ff2e97",
+    "claudeShimmer": "#ff7ec1",
+    "text": "#e5dcf2",
+    "inactive": "#8d7cae",
+    "inactiveShimmer": "#b3a3d1",
+    "subtle": "#4b3d66",
+    "suggestion": "#36f9f6",
+    "permission": "#b967ff",
+    "permissionShimmer": "#d4a3ff",
+    "remember": "#fede5d",
+
+    "promptBorder": "#3b2a5c",
+    "promptBorderShimmer": "#6d4ca8",
+    "planMode": "#36f9f6",
+    "autoAccept": "#ff8b39",
+    "bashBorder": "#ff2e97",
+    "ide": "#36f9f6",
+    "fastMode": "#fede5d",
+    "fastModeShimmer": "#fff08a",
+
+    "userMessageBackground": "#0c0714",
+    "userMessageBackgroundHover": "#150c22",
+    "bashMessageBackgroundColor": "#12061a",
+    "memoryBackgroundColor": "#120f06",
+    "selectionBg": "#2a1745",
+
+    "briefLabelYou": "#36f9f6",
+    "briefLabelClaude": "#ff2e97",
+    "rate_limit_fill": "#ff2e97",
+    "rate_limit_empty": "#1f1433",
+
+    "red_FOR_SUBAGENTS_ONLY": "#fe4450",
+    "blue_FOR_SUBAGENTS_ONLY": "#7b61ff",
+    "green_FOR_SUBAGENTS_ONLY": "#72f1b8",
+    "yellow_FOR_SUBAGENTS_ONLY": "#fede5d",
+    "purple_FOR_SUBAGENTS_ONLY": "#b967ff",
+    "orange_FOR_SUBAGENTS_ONLY": "#ff8b39",
+    "pink_FOR_SUBAGENTS_ONLY": "#ff2e97",
+    "cyan_FOR_SUBAGENTS_ONLY": "#36f9f6"
+  }
+}

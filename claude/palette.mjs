@@ -1,25 +1,41 @@
-// Paleta Dracula e utilitários compartilhados pelos scripts de status line.
+// Paleta Midnight Synthwave e utilitários compartilhados pelos scripts de status line.
+// Cores de synthwave (rosa neon, ciano e roxo) para fundos quase pretos.
 
 const toRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+const fg = (channels) => `\x1b[38;2;${channels.join(';')}m`;
 
-export const rgb = (hex) => `\x1b[38;2;${toRgb(hex).join(';')}m`;
+export const rgb = (hex) => fg(toRgb(hex));
 export const RESET = '\x1b[0m';
-export const ACCENT = rgb('#bd93f9'); // roxo
-export const INFO = rgb('#8be9fd'); // ciano
-export const HIGHLIGHT = rgb('#ff79c6'); // rosa
-export const WARN = rgb('#ffb86c'); // laranja
-export const CAUTION = rgb('#f1fa8c'); // amarelo
-export const MUTED = rgb('#6272a4'); // cinza-azulado
-export const LABEL = rgb('#a4acd4'); // lavanda, para rótulos
-export const STRONG = rgb('#f8f8f2'); // quase branco, para valores
+export const ACCENT = rgb('#ff2e97'); // rosa neon
+export const INFO = rgb('#36f9f6'); // ciano neon
+export const HIGHLIGHT = rgb('#b967ff'); // roxo neon
+export const WARN = rgb('#ff8b39'); // laranja de pôr do sol
+export const CAUTION = rgb('#fede5d'); // amarelo
+export const MUTED = rgb('#4b3d66'); // roxo apagado
+export const LABEL = rgb('#9a86c2'); // lavanda escura, para rótulos
+export const STRONG = rgb('#e5dcf2'); // branco lilás, para valores
 
 // Cores por faixa sem depender de vermelho/verde (amigável para daltonismo).
 export const levelColor = (pct) => (pct < 50 ? INFO : pct < 80 ? CAUTION : WARN);
 
-// Barra de progresso: blocos cheios na cor da faixa, vazios em cinza.
+// Barra de progresso. Enquanto o nível é tranquilo, a parte cheia ganha um degradê
+// ciano → rosa; a partir de 50% vale a cor de alerta da faixa.
+const BAR_GRADIENT = ['#36f9f6', '#ff2e97'].map(toRgb);
+const BAR_EMPTY = rgb('#2a1f3d');
+
 export const bar = (pct, width) => {
   const filled = Math.max(0, Math.min(width, Math.round((pct / 100) * width)));
-  return `${levelColor(pct)}${'█'.repeat(filled)}${MUTED}${'░'.repeat(width - filled)}`;
+  let full;
+  if (pct < 50) {
+    const [from, to] = BAR_GRADIENT;
+    full = Array.from({ length: filled }, (_, i) => {
+      const t = width > 1 ? i / (width - 1) : 0;
+      return `${fg(from.map((v, k) => Math.round(v + (to[k] - v) * t)))}█`;
+    }).join('');
+  } else {
+    full = `${levelColor(pct)}${'█'.repeat(filled)}`;
+  }
+  return `${full}${BAR_EMPTY}${'░'.repeat(width - filled)}`;
 };
 
 // Link clicável (OSC 8), suportado pelo Windows Terminal.
